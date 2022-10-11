@@ -2,6 +2,7 @@ const mongoose = require('../bin/mongoose.util');
 const {Schema} = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+    
     name: {
         type: String,
         required: true
@@ -32,15 +33,15 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: true
+        // required: true
     },
     batch: {
         type: String,
-        required: true
+        // required: true
     },
     department: {
         type: String,
-        required: true
+        required: false
     },
     courses: {
         type: [Schema.Types.ObjectId],
@@ -48,5 +49,5 @@ const userSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-const userModel = mongoose.model('User', userSchema);
-module.exports = {userModel, userSchema};
+module.exports = mongoose.model('User', userSchema);
+

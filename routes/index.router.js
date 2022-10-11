@@ -3,7 +3,10 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const router = express.Router();
+
 const authRouter = require('./login.route');
+const logoutRouter=require('./logout.route');
+
 
 // swagger docs config
 
@@ -22,13 +25,22 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
+
+
+
 router.use(
     '/api-docs',
     swaggerUi.serve,
     swaggerUi.setup(swaggerDocs),
 );
 
+
+
+
+
 // routes
 router.use('/login', authRouter);
+router.use('/auth',logoutRouter);
+
 
 module.exports = router;
