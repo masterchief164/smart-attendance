@@ -30,7 +30,16 @@ app.get('/', (req, res) => {
 
 const port = process.env.PORT || 8000;
 
+const start =async()=>{
+  try {
+    
+      app.listen(port, () =>
+        console.log(`Server is listening on port ${port}...`)
+        
+      );
+    } catch (error) {
+      console.log(error);
+    }
+}
 
-app.listen(port, () =>
-  console.log(`Server is listening on port ${port}...`)
-);
+start();
