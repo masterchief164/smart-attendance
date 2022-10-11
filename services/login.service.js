@@ -10,7 +10,7 @@ const getGoogleOAuthTokens = async (code) => {
         code,
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
-        redirect_uri: `${process.env.FRONTEND_URL}/google`,
+        redirect_uri:  `${process.env.FRONTEND_URL}/google`,
         grant_type: 'authorization_code',
     };
 
@@ -38,9 +38,9 @@ const createTokenProfile = (user) => {
         family_name: user.family_name,
         _id: user._id,
         phoneNumber: user.phoneNumber,
-        batch: user.batch,
-        hallNumber: user.hallNumber,
-        roomNumber: user.roomNumber,
+        // batch: user.batch,
+        // hallNumber: user.hallNumber,
+        // roomNumber: user.roomNumber,
     };
     return jwt.sign(newUser, process.env.CLIENT_SECRET, { expiresIn: '1800s' });
 };
