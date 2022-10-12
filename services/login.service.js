@@ -10,7 +10,7 @@ const getGoogleOAuthTokens = async (code) => {
         code,
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
-        redirect_uri:  `${process.env.FRONTEND_URL}/google`,
+        redirect_uri: `${process.env.FRONTEND_URL}/google`,
         grant_type: 'authorization_code',
     };
 
@@ -42,9 +42,9 @@ const createTokenProfile = (user) => {
         // hallNumber: user.hallNumber,
         // roomNumber: user.roomNumber,
     };
-    return jwt.sign(newUser, process.env.CLIENT_SECRET, { expiresIn: '1800s' });
+    return jwt.sign(newUser, process.env.CLIENT_SECRET, {expiresIn: '1800s'});
 };
 
-const decodeToken = (token) => jwt.decode(token, { complete: false });
+const decodeToken = (token) => jwt.decode(token, {complete: false});
 
 module.exports = {getGoogleOAuthTokens, createTokenProfile, decodeToken};

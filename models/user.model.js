@@ -2,7 +2,7 @@ const mongoose = require('../bin/mongoose.util');
 const {Schema} = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    
+
     name: {
         type: String,
         required: true
@@ -33,11 +33,9 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        // required: true
     },
     batch: {
         type: String,
-        // required: true
     },
     department: {
         type: String,
