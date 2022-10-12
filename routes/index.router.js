@@ -6,6 +6,7 @@ const router = express.Router();
 
 const authRouter = require('./login.route');
 const logoutRouter=require('./logout.route');
+const session = require('./session.route');
 
 
 // swagger docs config
@@ -41,6 +42,7 @@ router.use(
 // routes
 router.use('/login', authRouter);
 router.use('/auth',logoutRouter);
+router.use('/session',session);
 
 
 module.exports = router;

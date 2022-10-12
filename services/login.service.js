@@ -14,7 +14,7 @@ const getGoogleOAuthTokens = async (code) => {
         grant_type: 'authorization_code',
     };
 
-    console.log(qs.stringify(options));
+    // console.log(options);
     return axios.post(url, qs.stringify(options), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
