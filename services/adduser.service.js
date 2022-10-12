@@ -1,8 +1,8 @@
-const User =require('../models/user.model');
+const User = require('../models/user.model');
 
-const addUser= async(userDetails)=>{
+const addUser = async (userDetails) => {
     try {
-        const user=await User.create(userDetails);
+        const user = await User.create(userDetails);
         console.log(user);
     } catch (error) {
         console.log(error);
@@ -10,4 +10,4 @@ const addUser= async(userDetails)=>{
 
 
 }
-module.exports=addUser
+module.exports = addUser

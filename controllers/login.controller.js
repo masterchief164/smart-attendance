@@ -2,12 +2,9 @@ const {createTokenProfile, decodeToken, getGoogleOAuthTokens} = require("../serv
 const jwt = require('jsonwebtoken');
 const addUser = require('../services/adduser.service')
 
-
 const User = require("../models/user.model");
-// const  Session =require("../models/session.model");
 
 const googleLogin = async (req, res) => {
-
 
     try {
         const code = req.body.tokenId;
@@ -25,12 +22,9 @@ const googleLogin = async (req, res) => {
             oldUser = await addUser(user);
         }
 
-        // const token = person.hallNumber ? await createTokenProfile(person) : await createToken(person);
-
         const token = await createTokenProfile(oldUser);
         const userData = decodeToken(token);
         userData.exp = new Date(Date.now() + 1800000);
-        // console.log(userData);
 
         // console.log(process.env.NODE_ENV === 'production');
 
