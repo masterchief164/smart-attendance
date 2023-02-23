@@ -4,7 +4,9 @@ const cors = require('cors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const Router = require('./routes/index.router');
+const morgan = require('morgan');
 const app = express();
+app.use(morgan('dev'))
 
 app.use(cors({
     credentials: true,

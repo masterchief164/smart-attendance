@@ -1,9 +1,10 @@
 const {addSession, addAttendance} = require('../services/session.service')
 const crypto = require('crypto');
-
+// TODO : change the path in frontend of the login routers
 const createSession = async (req, res) => {
     try {
         const user = req.user;
+        const courseId = req.query.courseId;
         const document = await addSession(user, user); // TODO replace second user with course
         const session = document.toObject();
         session.nonce = crypto.randomInt(10000000, 99999999);

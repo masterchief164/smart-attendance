@@ -14,15 +14,19 @@ const getGoogleOAuthTokens = async (code) => {
         grant_type: 'authorization_code',
     };
 
-    // console.log(options);
     return axios.post(url, qs.stringify(options), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-    })
-        .catch((err) => {
-            console.log(err.message);
-        });
+    }).catch((err) => {
+        if(err.response.status === 400) {
+            return {status: 400};
+        }else{
+            console.log(err.response.data);
+            return {status: 500};
+        }
+
+    });
 };
 
 const createTokenProfile = (user) => {

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const verify = (req, res, next) => {
     const token = req.cookies.token;
+    // console.log(req.cookies);
     if (token == null) {
         return res.status(401)
             .send('Unauthorized');

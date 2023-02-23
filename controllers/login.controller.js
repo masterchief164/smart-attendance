@@ -1,23 +1,31 @@
 const {createTokenProfile, decodeToken, getGoogleOAuthTokens} = require("../services/login.service");
 const jwt = require('jsonwebtoken');
-const addUser = require('../services/adduser.service')
+const {addUser, findUser} = require('../services/user.service')
 
-const User = require("../models/user.model");
 
 const googleLogin = async (req, res) => {
 
     try {
         const code = req.body.tokenId;
+        const userType = req.body.userType ? req.body.userType : "student";
         const resp = await getGoogleOAuthTokens(code);
-
+        if (resp.status === 400) {
+            res.status(400).send({error: 'Invalid auth code'});
+            return;
+        }
+        if (resp.status === 500) {
+            res.status(500).send({error: 'Internal server error'});
+            return;
+        }
         const {id_token} = resp.data;
         const user = jwt.decode(id_token, {complete: false});
 
         user.access_token = resp.data.access_token;
         user.roll = user.email.split('@')[0];
         user.registeredAt = user.iat;
-        let oldUser = await User.findOne({email: user.email})
-        console.log(oldUser);
+        user.userType = userType;
+        let oldUser = await findUser(user.email);
+        // console.log(oldUser);
         if (!oldUser) {
             oldUser = await addUser(user);
         }
@@ -45,5 +53,14 @@ const googleLogin = async (req, res) => {
 
 };
 
+const logout = (req, res) => {
 
-module.exports = {googleLogin};
+    try {
+        res.clearCookie('token').status(200).json({success: true});
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+module.exports = {googleLogin, logout};

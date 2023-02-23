@@ -1,12 +1,13 @@
 const express = require('express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
 
 const router = express.Router();
 
-const authRouter = require('./login.route');
-const logoutRouter=require('./logout.route');
+const authRouter = require('./auth.route');
 const session = require('./session.route');
+const course = require('./course.route');
 
 
 // swagger docs config
@@ -18,7 +19,7 @@ const swaggerOptions = {
             title: 'Documentation',
         },
         servers: [
-            { url: 'http://localhost:8000' },
+            {url: 'http://localhost:8000'},
         ],
     },
     apis: ['./routes/*.js'],
@@ -27,22 +28,17 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 
-
-
 router.use(
     '/api-docs',
     swaggerUi.serve,
-    swaggerUi.setup(swaggerDocs),
+    swaggerUi.setup(swaggerDocument),
 );
 
 
-
-
-
 // routes
-router.use('/login', authRouter);
-router.use('/auth',logoutRouter);
-router.use('/session',session);
+router.use('/auth', authRouter);
+router.use('/session', session);
+router.use('/course', course);
 
 
 module.exports = router;
