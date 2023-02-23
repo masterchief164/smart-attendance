@@ -4,46 +4,29 @@ const {Schema} = require("mongoose");
 const userSchema = new mongoose.Schema({
 
     name: {
+        type: String, required: true
+    }, email: {
+        type: String, required: true
+    }, picture: {
+        type: String, required: true,
+    }, sub: {
+        type: String, required: true
+    }, given_name: {
+        type: String, required: true
+    }, family_name: {
+        type: String, required: true
+    }, phoneNumber: {
         type: String,
-        required: true
-    },
-    email: {
+    }, department: {
         type: String,
-        required: true
-    },
-    picture: {
+    }, courses: {
+        type: [Schema.Types.ObjectId], ref: "Course"
+    }, roll: {
+        type: String, required: true
+    }, batch: {
         type: String,
-        required: true,
-    },
-    roll: {
-        type: String,
-        required: true
-    },
-    sub: {
-        type: String,
-        required: true
-    },
-    given_name: {
-        type: String,
-        required: true
-    },
-    family_name: {
-        type: String,
-        required: true
-    },
-    phoneNumber: {
-        type: String,
-    },
-    batch: {
-        type: String,
-    },
-    department: {
-        type: String,
-        required: false
-    },
-    courses: {
-        type: [Schema.Types.ObjectId],
-        required: false
+    }, userType: {
+        type: String, required: true, enum: ['student', 'instructor', 'admin'], default: 'student'
     }
 }, {timestamps: true});
 

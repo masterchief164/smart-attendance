@@ -1,0 +1,555 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Smart Attendance API",
+    "description": "This is the API for the Smart Attendance application based upon the OpenAPI 3.0.3 specification.",
+    "contact": {
+      "email": "rishugupta2001.rg@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "session",
+      "description": "The session API"
+    },
+    {
+      "name": "auth",
+      "description": "The login API"
+    },
+    {
+      "name": "course",
+      "description": "The course API"
+    }
+  ],
+  "paths": {
+    "/session/createSession": {
+      "get": {
+        "tags": [
+          "session"
+        ],
+        "summary": "Create a new session with sse",
+        "description": "Create a new session with sse for the given courseID",
+        "operationId": "updatePet",
+        "parameters": [
+          {
+            "name": "courseID",
+            "in": "query",
+            "description": "ID of the course to create a session for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "afswerg48645fwg48s56"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sessionID": {
+                      "type": "string",
+                      "example": "afswerg48645fwg48s56"
+                    },
+                    "nonce": {
+                      "type": "string",
+                      "example": "afswerg48645fwg48s56"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          },
+          "404": {
+            "description": "Course not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    },
+    "/session/attend": {
+      "post": {
+        "tags": [
+          "session"
+        ],
+        "summary": "Attend a session",
+        "description": "User scans the QR code and sends the nonce to the server with the sessionID",
+        "operationId": "attendSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionID": {
+                    "type": "string",
+                    "example": "afswerg48645fwg48s56"
+                  },
+                  "nonce": {
+                    "type": "string",
+                    "example": "afswerg48645fwg48s56"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully attended the session"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid session ID or nonce"
+          },
+          "401": {
+            "description": "Invalid JWT"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    },
+    "/auth/googleLogin": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Google Login",
+        "description": "User logs in using Google OAuth auth code and gets a JWT",
+        "operationId": "googleLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tokenId": {
+                    "type": "string",
+                    "example": "afswerg48645fwg48s56"
+                  },
+                  "userType": {
+                    "type": "string",
+                    "enum": [
+                      "student",
+                      "instructor"
+                    ],
+                    "example": "student",
+                    "default": "student",
+                    "required": true
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string",
+                  "example": "token=afswerg48645fwg48s56; HttpOnly; Path=/"
+                },
+                "description": "JWT cookie"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid auth code"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "description": "User logs out and the JWT cookie is deleted",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Successfully logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/course": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get all courses",
+        "description": "Get all courses",
+        "operationId": "getCourses",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Create a new course",
+        "description": "Create a new course",
+        "operationId": "createCourse",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    },
+    "/course/{courseId}": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get course by ID",
+        "description": "Get course by ID",
+        "operationId": "getCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "description": "ID of the course to return",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "afswerg48645fwg48s56"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Update course by ID",
+        "description": "Update course by ID",
+        "operationId": "updateCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "description": "ID of the course to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "afswerg48645fwg48s56"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          },
+          "404": {
+            "description": "Course not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Delete course by ID",
+        "description": "Delete course by ID",
+        "operationId": "deleteCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "description": "ID of the course to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "afswerg48645fwg48s56"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid JWT"
+          },
+          "404": {
+            "description": "Course not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6345c2bca8a7251a8cb5faaa"
+          },
+          "sub": {
+            "type": "integer",
+            "example": "109382847279098435731"
+          },
+          "roll": {
+            "type": "string",
+            "example": "20bec101"
+          },
+          "picture": {
+            "type": "string",
+            "example": "https://lh3.googleusercontent.com/a/ALm5wu2DCl5iYxDfX2BmiHX-OKOKNCPH1Ny5EglFc3Ed=s96-c"
+          },
+          "family_name": {
+            "type": "string",
+            "example": "Gupta"
+          },
+          "given_name": {
+            "type": "string",
+            "example": "Shaswat"
+          },
+          "email": {
+            "type": "string",
+            "example": "20bec101@iiitdmj.ac.in"
+          },
+          "exp": {
+            "type": "integer",
+            "example": "2022-11-05T20:34:53.396Z"
+          },
+          "iat": {
+            "type": "integer",
+            "example": "1667678693"
+          },
+          "userType": {
+            "type": "string",
+            "example": "student"
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6345c2bca8a7251a8cb5faaa"
+          },
+          "name": {
+            "type": "string",
+            "example": "CS 201"
+          },
+          "teacher": {
+            "$ref": "#/components/schemas/User"
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT Authentication": {
+        "type": "apiKey",
+        "name": "token",
+        "in": "cookie"
+      }
+    }
+  }
+}

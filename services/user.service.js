@@ -7,7 +7,13 @@ const addUser = async (userDetails) => {
     } catch (error) {
         console.log(error);
     }
-
-
 }
-module.exports = addUser
+
+const findUser = async (email) => {
+    try {
+        return await User.findOne({email});
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports = {addUser, findUser};
