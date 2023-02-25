@@ -34,15 +34,15 @@ const googleLogin = async (req, res) => {
         const userData = decodeToken(token);
         userData.exp = new Date(Date.now() + 1800000);
 
-        // console.log(process.env.NODE_ENV === 'production');
-
+        const cookie =  {
+            expires: new Date(Date.now() + 1800000),
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        }
+        console.log(cookie);
         res.status(202)
-            .cookie('token', token, {
-                expires: new Date(Date.now() + 1800000),
-                httpOnly: true,
-                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-                secure: process.env.NODE_ENV === 'production',
-            })
+            .cookie('token', token, cookie)
             .send({...userData});
 
     } catch (error) {

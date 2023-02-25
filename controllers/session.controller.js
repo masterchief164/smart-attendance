@@ -10,25 +10,29 @@ const createSession = async (req, res) => {
         const session = document.toObject();
         session.nonce = crypto.randomInt(10000000, 99999999);
         const headers = {
-            "Content-Type": "text/event-stream",
-            "Connection": "keep-alive",
-            "Cache-Control": "no-cache",
+            'Content-Type': 'text/event-stream',
+            'Connection': 'keep-alive',
+            'Cache-Control': 'no-cache',
         };
         res.writeHead(200, headers);
+        console.log("wrote")
         session.nonce = crypto.randomInt(10000000, 99999999);
         const data = `data: ${JSON.stringify({id: session._id, nonce: session.nonce})}\n\n`;
         res.write(data);
         let interval = setInterval(async () => {
             session.nonce = crypto.randomInt(10000000, 99999999);
-            await client.set(session._id, session.nonce)
+            await client.set(session._id.toString(), session.nonce)
             const data = `data: ${JSON.stringify({id: session._id, nonce: session.nonce})}\n\n`;
             res.write(data);
             console.log("wrote")
-        }, 5000);
+        }, 1000);
 
         req.on('close', () => {
             console.log("closed")
             clearInterval(interval);
+        });
+        req.on('error', (e) => {
+            console.log("error", e)
         });
         // res.status(200).send(session);
         // console.log(session);
@@ -47,8 +51,7 @@ const attendSession = async (req, res) => {
         const redisNonce = await client.get(sessionId);
         if (redisNonce !== nonce) {
             res.status(400).send({error: "Invalid nonce"});
-        }
-        else {
+        } else {
             const attend = await addAttendance(req.user, sessionId);
             console.log(attend);
             res.status(200).send(attend);
