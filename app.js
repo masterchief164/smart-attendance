@@ -1,11 +1,17 @@
 require('dotenv').config();
 
 const cors = require('cors');
+const http2 = require("http2");
+const http2Express = require('http2-express-bridge');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const Router = require('./routes/index.router');
 const morgan = require('morgan');
-const app = express();
+const app = http2Express(express)
+const fs = require('fs');
+
+app.use(express.static("public"))
+
 app.use(morgan('dev'))
 
 app.use(cors({
@@ -26,19 +32,23 @@ app.get('/', (req, res) => {
 });
 
 
-
 const port = process.env.PORT || 8000;
+const options = {
+    key: fs.readFileSync("./server.key"),
+    cert: fs.readFileSync("./server.crt"),
+    allowHTTP1: true
+}
 
-const start =async()=>{
-  try {
+const start = async () => {
+    try {
 
-      app.listen(port, () =>
-        console.log(`Server is listening on port ${port}...`)
-
-      );
-    } catch (error) {
-      console.log(error);
+        const server = http2.createSecureServer(options, app)
+        server.listen(port)
+    } catch (e) {
+        console.log(e)
     }
 }
 
-start();
+start().then(() => {
+    console.log("Server started on port", port)
+});
