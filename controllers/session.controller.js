@@ -1,5 +1,6 @@
 const {addSession, addAttendance} = require('../services/session.service')
 const crypto = require('crypto');
+const client = require('../bin/redis.util');
 // TODO : change the path in frontend of the login routers
 const createSession = async (req, res) => {
     try {
@@ -17,12 +18,12 @@ const createSession = async (req, res) => {
         session.nonce = crypto.randomInt(10000000, 99999999);
         const data = `data: ${JSON.stringify({id: session._id, nonce: session.nonce})}\n\n`;
         res.write(data);
-        let interval = setInterval(() => {
+        let interval = setInterval(async () => {
             session.nonce = crypto.randomInt(10000000, 99999999);
+            await client.set(session._id, session.nonce)
             const data = `data: ${JSON.stringify({id: session._id, nonce: session.nonce})}\n\n`;
             res.write(data);
             console.log("wrote")
-            // counter++;
         }, 5000);
 
         req.on('close', () => {
@@ -43,9 +44,15 @@ const attendSession = async (req, res) => {
         console.log(req.body);
         const sessionId = req.body.session_id;
         const nonce = req.body.nonce;
-        const attend = await addAttendance(req.user, sessionId);
-        console.log(attend);
-        res.status(200).send(attend);
+        const redisNonce = await client.get(sessionId);
+        if (redisNonce !== nonce) {
+            res.status(400).send({error: "Invalid nonce"});
+        }
+        else {
+            const attend = await addAttendance(req.user, sessionId);
+            console.log(attend);
+            res.status(200).send(attend);
+        }
     } catch (error) {
         console.log(error)
     }
