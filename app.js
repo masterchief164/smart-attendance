@@ -18,9 +18,6 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 
 
-
-
-
 app.use('/', Router);
 
 
