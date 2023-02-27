@@ -25,7 +25,7 @@ const createSession = async (req, res) => {
             const data = `data: ${JSON.stringify({id: session._id, nonce: session.nonce})}\n\n`;
             res.write(data);
             console.log("wrote")
-        }, 1000);
+        }, 5000);
 
         req.on('close', () => {
             console.log("closed")

@@ -3,14 +3,14 @@ const qs = require('querystring');
 const jwt = require('jsonwebtoken');
 
 
-const getGoogleOAuthTokens = async (code) => {
+const getGoogleOAuthTokens = async (code, referrer) => {
     const url = 'https://oauth2.googleapis.com/token';
 
     const options = {
         code,
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
-        redirect_uri: `${process.env.FRONTEND_URL}/google`,
+        redirect_uri: `${referrer}google`,
         grant_type: 'authorization_code',
     };
 
