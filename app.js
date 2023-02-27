@@ -34,8 +34,8 @@ app.get('/', (req, res) => {
 
 const port = process.env.PORT || 8000;
 const options = {
-    key: fs.readFileSync("./server.key"),
-    cert: fs.readFileSync("./server.crt"),
+    key: fs.readFileSync("./private.pem"),
+    cert: fs.readFileSync("./cert.pem"),
     allowHTTP1: true
 }
 
