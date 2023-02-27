@@ -16,7 +16,8 @@ app.use(morgan('dev'))
 
 app.use(cors({
     credentials: true,
-    origin: ['http://localhost:3001', 'https://smart-attendance-blue.vercel.app']
+    origin: ['http://localhost:3001', 'https://smartattendance.live', 'https://www.smartattendance.live',
+        'https://smart-attendance-blue.vercel.app/']
 }));
 
 app.use(express.json());
