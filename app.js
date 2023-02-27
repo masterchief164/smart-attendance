@@ -26,9 +26,9 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/', Router);
 
-
+const appid = process.env.APPID;
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send(`${appid} Hello World!`);
 });
 
 
