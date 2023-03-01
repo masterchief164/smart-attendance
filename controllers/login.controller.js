@@ -8,7 +8,7 @@ const googleLogin = async (req, res) => {
     try {
         const code = req.body.tokenId;
         const userType = req.body.userType ? req.body.userType : "student";
-        const referrer = req.headers.referer? req.headers.referrer: "http://localhost:3000/";
+        const referrer = req.headers.referer? req.headers.referer: "http://localhost:3000/";
         const resp = await getGoogleOAuthTokens(code, referrer);
         if (resp.status === 400) {
             res.status(400).send({error: 'Invalid auth code'});

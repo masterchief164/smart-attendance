@@ -3,3 +3,5 @@
 .env
 server.crt
 server.key
+/private.pem
+/cert.pem
