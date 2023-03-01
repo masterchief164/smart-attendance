@@ -47,7 +47,7 @@ const attendSession = async (req, res) => {
     try {
         console.log(req.body);
         const sessionId = req.body.session_id;
-        const nonce = req.body.nonce;
+        const nonce = req.body.nonce.toString();
         const redisNonce = await client.get(sessionId);
         if (redisNonce !== nonce) {
             res.status(400).send({error: "Invalid nonce"});
