@@ -14,7 +14,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000/"
+      "url": "http://localhost:8000/",
+      "description": "Local server"
+    },
+    {
+      "url": "https://smartattendance.ddns.net/",
+      "description": "Cloud server"
     }
   ],
   "tags": [
@@ -137,6 +142,112 @@
           },
           "400": {
             "description": "Invalid session ID or nonce"
+          },
+          "401": {
+            "description": "Invalid JWT"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    },
+    "/session/{courseID}": {
+      "get": {
+        "tags": [
+          "session"
+        ],
+        "summary": "Get all sessions for a course",
+        "description": "Get all sessions for a course",
+        "operationId": "getSessions",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Session"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid course ID"
+          },
+          "401": {
+            "description": "Invalid JWT"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      }
+    },
+    "/session/{sessionID}": {
+      "get": {
+        "tags": [
+          "session"
+        ],
+        "summary": "Get a session detail",
+        "description": "Get a session detail",
+        "operationId": "getSession",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid session ID"
+          },
+          "401": {
+            "description": "Invalid JWT"
+          }
+        },
+        "security": [
+          {
+            "JWT Authentication": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "session"
+        ],
+        "summary": "Delete a session",
+        "description": "Delete a session",
+        "operationId": "deleteSession",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully deleted the session"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid session ID"
           },
           "401": {
             "description": "Invalid JWT"
@@ -536,6 +647,32 @@
             "$ref": "#/components/schemas/User"
           },
           "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6345c2bca8a7251a8cb5faaa"
+          },
+          "course_id": {
+            "type": "string",
+            "example": "6345c2bca8a7251a8cb5faaa"
+          },
+          "instructor": {
+            "$ref": "#/components/schemas/User"
+          },
+          "date": {
+            "type": "string",
+            "example": "2021-11-05T20:34:53.396Z"
+          },
+          "attendees": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/User"

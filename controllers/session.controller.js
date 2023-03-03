@@ -1,4 +1,4 @@
-const {addSession, addAttendance} = require('../services/session.service')
+const sessionService = require('../services/session.service')
 const crypto = require('crypto');
 const client = require('../bin/redis.util');
 // TODO : change the path in frontend of the login routers
@@ -6,7 +6,7 @@ const createSession = async (req, res) => {
     try {
         const user = req.user;
         const courseId = req.query.courseId;
-        const document = await addSession(user, user); // TODO replace second user with course
+        const document = await sessionService.addSession(user, user); // TODO replace second user with course
         const session = document.toObject();
         session.nonce = crypto.randomInt(10000000, 99999999);
         const headers = {
@@ -43,6 +43,30 @@ const createSession = async (req, res) => {
     }
 }
 
+const getSessions = async (req, res) => {
+    try {
+        const courseID = req.query.courseId;
+        const sessions = await sessionService.getSessions(courseID);
+        res.status(200).send(sessions);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+
+const getSession = async (req, res) => {
+    try {
+        const sessionId = req.params.sessionId;
+        const session = await sessionService.getSession(sessionId);
+        res.status(200).send(session);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+
 const attendSession = async (req, res) => {
     try {
         console.log(req.body);
@@ -52,7 +76,7 @@ const attendSession = async (req, res) => {
         if (redisNonce !== nonce) {
             res.status(400).send({error: "Invalid nonce"});
         } else {
-            const attend = await addAttendance(req.user, sessionId);
+            const attend = await sessionService.addAttendance(req.user, sessionId);
             console.log(attend);
             res.status(200).send(attend);
         }
@@ -61,4 +85,16 @@ const attendSession = async (req, res) => {
     }
 }
 
-module.exports = {createSession, attendSession}
+const deleteSession = async (req, res) => {
+    try {
+        const sessionId = req.params.sessionId;
+        const session = await sessionService.deleteSession(sessionId);
+        res.status(200).send(session);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+
+module.exports = {createSession, attendSession, getSessions, getSession, deleteSession}

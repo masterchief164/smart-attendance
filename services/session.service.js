@@ -32,4 +32,28 @@ const addAttendance = async (user, sessionId) => {
 
 }
 
-module.exports = {addSession, addAttendance}
+const getSessions = async (courseID) => {
+    try {
+        return await Session.find({courseId: courseID});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const getSession = async (sessionId) => {
+    try {
+        return await Session.findOne({_id: sessionId});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const deleteSession = async (sessionId) => {
+    try {
+        return await Session.findOneAndRemove({_id: sessionId});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = {addSession, getSessions, getSession, addAttendance, deleteSession}
