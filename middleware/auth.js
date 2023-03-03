@@ -16,4 +16,13 @@ const verify = (req, res, next) => {
     });
 };
 
-module.exports = verify;
+const restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.userType)) {
+            return res.status(403).json('You do not have permission ot perform this action');
+        }
+        next();
+    }
+};
+
+module.exports = {verify, restrictTo};
