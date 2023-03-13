@@ -9,6 +9,7 @@ router.post('/', verify, controller.createCourse);
 router.get('/:id', verify, controller.getCourse);
 router.put('/:id', verify, controller.updateCourse);
 router.delete('/:id', verify, controller.deleteCourse);
+router.patch('/:id', verify, controller.addStudent);
 
 
 module.exports = router;

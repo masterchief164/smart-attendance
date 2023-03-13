@@ -1,7 +1,5 @@
 /node_modules/
 /package-lock.json
 .env
-server.crt
-server.key
 /private.pem
 /cert.pem

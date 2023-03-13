@@ -1,4 +1,5 @@
 const courseService = require('../services/course.service');
+const userService = require('../services/user.service');
 
 const getCourses = async (req, res) => {
     try {
@@ -22,6 +23,10 @@ const getCourse = async (req, res) => {
 
 const createCourse = async (req, res) => {
     try {
+        if (req.body.course === undefined) {
+            res.status(400).send({error: "No course data provided"});
+            return;
+        }
         let course = {
             name: req.body.course.name,
             instructor: req.user._id
@@ -53,4 +58,23 @@ const deleteCourse = async (req, res) => {
     }
 }
 
-module.exports = {getCourses, getCourse, createCourse, updateCourse, deleteCourse};
+const addStudent = async (req, res) => {
+    try {
+        const student = req.body.student;
+        const studentObject = await userService.findUser(student);
+        if (studentObject === null) {
+            res.status(404).send({error: "Student not found"});
+            return;
+        }
+        const course = await courseService.addStudent(req.params.id, studentObject._id);
+        res.status(200).send({
+            course,
+            message: "Student added successfully",
+        })
+    } catch (err) {
+        console.log(err);
+        res.send(err);
+    }
+}
+
+module.exports = {getCourses, getCourse, createCourse, updateCourse, deleteCourse, addStudent};

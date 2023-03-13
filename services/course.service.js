@@ -41,6 +41,17 @@ const deleteCourse = async (id) => {
     }
 }
 
+const addStudent = async (course_id, student) => {
+    try {
+        const course = getCourse(course_id);
+        course.students.push(student);
+        return await course.save();
+    } catch (e) {
+        console.log(e);
+    }
+
+}
+
 module.exports = {
-    createCourse, getCourses, getCourse, updateCourse, deleteCourse
+    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent
 };
