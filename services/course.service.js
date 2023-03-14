@@ -19,7 +19,7 @@ const getCourses = async (id) => {
 
 const getCourse = async (id) => {
     try {
-        return await Course.findById(id).populate('students').populate('teachers');
+        return await Course.findById(id).populate('students').populate('instructor');
     } catch (error) {
         console.log(error);
     }
@@ -44,7 +44,9 @@ const deleteCourse = async (id) => {
 const addStudent = async (course_id, student) => {
     try {
         const course = getCourse(course_id);
-        course.students.push(student);
+        const allStudents = new Set(course.students);
+        allStudents.add(student);
+        course.students = Array.from(allStudents);
         return await course.save();
     } catch (e) {
         console.log(e);
