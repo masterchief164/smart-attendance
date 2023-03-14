@@ -43,10 +43,11 @@ const deleteCourse = async (id) => {
 
 const addStudent = async (course_id, student) => {
     try {
-        const course = getCourse(course_id);
+        const course = await getCourse(course_id);
         const allStudents = new Set(course.students);
         allStudents.add(student);
         course.students = Array.from(allStudents);
+        console.log(course);
         return await course.save();
     } catch (e) {
         console.log(e);
