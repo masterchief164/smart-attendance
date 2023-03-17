@@ -1,10 +1,16 @@
 const Session = require('../models/session.model');
+const courseService = require('./course.service');
 
 
-const addSession = async (user, course) => {
+const addSession = async (user, courseID) => {
     try {
+        const course = await courseService.getCourse(courseID)
+        if (!course) {
+
+            return null;
+        }
         const sessionDetails = {
-            courseId: user._id, // TODO replace with course._id
+            courseId: course._id,
             instructor: user._id,
             date: new Date(),
         }

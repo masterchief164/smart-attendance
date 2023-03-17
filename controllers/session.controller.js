@@ -6,7 +6,10 @@ const createSession = async (req, res) => {
     try {
         const user = req.user;
         const courseId = req.query.courseId;
-        const document = await sessionService.addSession(user, user); // TODO replace second user with course
+        const document = await sessionService.addSession(user, courseId); // TODO replace second user with course
+        if (!document) {
+            return res.status(404).send({error: "Course not found"});
+        }
         const session = document.toObject();
         session.nonce = crypto.randomInt(10000000, 99999999);
         const headers = {
