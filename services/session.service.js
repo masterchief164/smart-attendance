@@ -6,7 +6,6 @@ const addSession = async (user, courseID) => {
     try {
         const course = await courseService.getCourse(courseID)
         if (!course) {
-
             return null;
         }
         const sessionDetails = {
@@ -50,6 +49,7 @@ const getSessions = async (courseID, userID) => {
             sessionsCount: sessions.length,
             sessionDates: sessions.map(session => session.date),
             attendanceCount: attendanceCount,
+            sessionIds: sessions.map(session => session._id)
         };
     } catch (error) {
         console.log(error);
@@ -58,7 +58,7 @@ const getSessions = async (courseID, userID) => {
 
 const getSession = async (sessionId) => {
     try {
-        return await Session.findOne({_id: sessionId});
+        return await Session.findOne({_id: sessionId}).populate('attendees').populate('instructor').populate('courseId');
     } catch (error) {
         console.log(error);
     }
