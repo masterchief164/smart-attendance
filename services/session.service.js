@@ -32,9 +32,19 @@ const addAttendance = async (user, sessionId) => {
 
 }
 
-const getSessions = async (courseID) => {
+const getSessions = async (courseID, userID) => {
     try {
-        return await Session.find({courseId: courseID});
+        const sessions = await Session.find({courseId: courseID});
+        let attendanceCount = 0;
+        sessions.forEach(session =>{
+            if (session.attendees?.length > 0)
+                attendanceCount += session.attendees.includes(userID)? 1: 0;
+        })
+        return {
+            sessionsCount: sessions.length,
+            sessionDates: sessions.map(session => session.date),
+            attendanceCount: attendanceCount,
+        };
     } catch (error) {
         console.log(error);
     }

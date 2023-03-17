@@ -45,8 +45,8 @@ const createSession = async (req, res) => {
 
 const getSessions = async (req, res) => {
     try {
-        const courseID = req.query.courseId;
-        const sessions = await sessionService.getSessions(courseID);
+        const courseID = req.params.courseId;
+        const sessions = await sessionService.getSessions(courseID, req.user._id);
         res.status(200).send(sessions);
     } catch (error) {
         console.log(error);
