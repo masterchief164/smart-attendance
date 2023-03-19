@@ -10,6 +10,7 @@ router.get('/:id', verify, controller.getCourse);
 router.put('/:id', verify, controller.updateCourse);
 router.delete('/:id', verify, controller.deleteCourse);
 router.patch('/:id', verify, controller.addStudent);
+router.get('/:id/:userId', verify, controller.getStudentStats);
 
 
 module.exports = router;

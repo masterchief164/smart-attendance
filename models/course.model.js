@@ -9,7 +9,7 @@ const courseSchema = new mongoose.Schema({
     }, students: {
         type: [Schema.Types.ObjectId], ref: "User", required: true,
     }, sessions: {
-        type: [Schema.Types.ObjectId], ref: "Session", required: true,
+        type: [Schema.Types.ObjectId], ref: "Session", required: true, default: [],
     },
 }, {timestamps: true});
 

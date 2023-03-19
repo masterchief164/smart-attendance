@@ -13,7 +13,10 @@ const addSession = async (user, courseID) => {
             instructor: user._id,
             date: new Date(),
         }
-        return await Session.create(sessionDetails);
+        const session = await Session.create(sessionDetails);
+        course.sessions.push(session._id);
+        await course.save();
+        return session;
 
     } catch (error) {
         console.log(error);

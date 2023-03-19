@@ -1,5 +1,5 @@
 const Course = require('../models/course.model');
-const mongoose = require("mongoose");
+const User = require('../models/user.model');
 
 const createCourse = async (course) => {
     try {
@@ -27,7 +27,7 @@ const getCourse = async (id) => {
 
 const updateCourse = async (id, course) => {
     try {
-        return await Course.findByIdAndUpdate(id, course);
+        return await Course.findByIdAndUpdate(id, course); // TODO: Validate this
     } catch (error) {
         console.log(error);
     }
@@ -52,9 +52,27 @@ const addStudent = async (course_id, student) => {
     } catch (e) {
         console.log(e);
     }
+}
+
+const getStudentStats = async (course_id, student) => {
+    const course = await Course.findById(course_id).populate('sessions');
+    console.log(course);
+    let attendanceCount = 0;
+    course.sessions.forEach(session => {
+        if (session.attendees.includes(student._id)) {
+            attendanceCount++;
+        }
+    });
+
+    return {
+        attendanceCount,
+        sessions: course.sessions,
+        sessionsCount: course.sessions.length,
+        student
+    }
 
 }
 
 module.exports = {
-    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent
+    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent, getStudentStats
 };
