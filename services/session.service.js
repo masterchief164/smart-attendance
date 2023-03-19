@@ -42,17 +42,27 @@ const addAttendance = async (user, sessionId) => {
 
 const getSessions = async (courseID, userID) => {
     try {
-        const sessions = await Session.find({courseId: courseID});
+        const sessions = await Session.find({courseId: courseID}).lean();
         let attendanceCount = 0;
-        sessions.forEach(session =>{
-            if (session.attendees?.length > 0)
-                attendanceCount += session.attendees.includes(userID)? 1: 0;
+        sessions.forEach((session, index) => {
+            if (session.attendees?.length > 0) {
+                for (let attendee of session.attendees) {
+                    if (attendee.toString() === userID) {
+                        attendanceCount++;
+                        sessions[index].attended = true;
+                    }
+                }
+            } else {
+                sessions[index].attended = false;
+            }
         })
+        sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
         return {
             sessionsCount: sessions.length,
             sessionDates: sessions.map(session => session.date),
             attendanceCount: attendanceCount,
-            sessionIds: sessions.map(session => session._id)
+            sessionIds: sessions.map(session => session._id),
+            sessions
         };
     } catch (error) {
         console.log(error);
