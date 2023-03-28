@@ -42,9 +42,6 @@ const createTokenProfile = (user) => {
         family_name: user.family_name,
         _id: user._id,
         phoneNumber: user.phoneNumber,
-        // batch: user.batch,
-        // hallNumber: user.hallNumber,
-        // roomNumber: user.roomNumber,
     };
     return jwt.sign(newUser, process.env.CLIENT_SECRET, {expiresIn: '1800s'});
 };

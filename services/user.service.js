@@ -9,6 +9,22 @@ const addUser = async (userDetails) => {
     }
 }
 
+const getAllUsers = async () => {
+    try {
+        return await User.find();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const getUserById = async (id) => {
+    try {
+        return await User.findById(id).lean();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const findUser = async (email) => {
     try {
         return await User.findOne({email});
@@ -16,4 +32,12 @@ const findUser = async (email) => {
         console.log(error);
     }
 }
-module.exports = {addUser, findUser};
+
+const updateUserRole = async (id, role) => {
+    try{
+        return await User.findByIdAndUpdate(id, {$set:{userType:role}}, {new: true, runValidators: true}).lean();
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole};

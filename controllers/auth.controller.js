@@ -1,4 +1,4 @@
-const {createTokenProfile, decodeToken, getGoogleOAuthTokens} = require("../services/login.service");
+const {createTokenProfile, decodeToken, getGoogleOAuthTokens} = require("../services/auth.service");
 const jwt = require('jsonwebtoken');
 const {addUser, findUser} = require('../services/user.service')
 
@@ -26,22 +26,20 @@ const googleLogin = async (req, res) => {
         user.registeredAt = user.iat;
         user.userType = userType;
         let oldUser = await findUser(user.email);
-        // console.log(oldUser);
         if (!oldUser) {
             oldUser = await addUser(user);
         }
-
+        const expiry = new Date(Date.now() + 1800000);
         const token = await createTokenProfile(oldUser);
         const userData = decodeToken(token);
-        userData.exp = new Date(Date.now() + 1800000);
+        userData.exp = expiry;
 
         const cookie =  {
-            expires: new Date(Date.now() + 1800000),
+            expires: expiry,
             httpOnly: true,
             sameSite: 'none',
             secure: true,
         }
-        console.log(cookie);
         res.status(202)
             .cookie('token', token, cookie)
             .send({...userData});
@@ -55,7 +53,6 @@ const googleLogin = async (req, res) => {
 };
 
 const logout = (req, res) => {
-
     try {
         res.clearCookie('token').status(200).json({success: true});
     } catch (error) {
