@@ -19,6 +19,7 @@
     "http2": "^3.3.7",
     "http2-express-bridge": "^1.0.7",
     "jsonwebtoken": "^9.0.0",
+    "kafkajs": "^2.2.4",
     "mongoose": "^6.6.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.20",

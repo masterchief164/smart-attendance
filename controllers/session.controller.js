@@ -1,6 +1,7 @@
 const sessionService = require('../services/session.service')
 const crypto = require('crypto');
 const client = require('../bin/redis.util');
+const kafka = require('../bin/kafka.util');
 // TODO : change the path in frontend of the login routers
 const createSession = async (req, res) => {
     try {
@@ -11,6 +12,19 @@ const createSession = async (req, res) => {
             return res.status(404).send({error: "Course not found"});
         }
         const session = document.toObject();
+        await kafka.createTopic(document._id.toString());
+        const kafkaConsumer = await kafka.getConsumer(document._id.toString());
+        await kafkaConsumer.run({
+            "eachMessage": async (result) => {
+                console.log("Kafka consumer", result.message.value.toString());
+                const message = JSON.parse(result.message.value.toString());
+                const data = {
+                    message,
+                    attendance: true,
+                }
+                res.write(`data: ${JSON.stringify(data)}\n\n`);
+            }
+        })
         session.nonce = crypto.randomInt(10000000, 99999999);
         const headers = {
             'Content-Type': 'text/event-stream',
@@ -33,12 +47,15 @@ const createSession = async (req, res) => {
         req.on('close', () => {
             console.log("closed")
             clearInterval(interval);
+            kafkaConsumer.disconnect();
         });
         req.on('error', (e) => {
             console.log("error", e)
+            clearInterval(interval);
+            kafkaConsumer.disconnect();
         });
         // res.status(200).send(session);
-        // console.log(session);
+        console.log(session);
     } catch (error) {
         console.log(error);
         res.status(500)
@@ -49,7 +66,7 @@ const createSession = async (req, res) => {
 const getSessions = async (req, res) => {
     try {
         const courseID = req.params.courseId;
-        const sessions = await sessionService.getSessions(courseID, req.user._id);
+        const sessions = await sessionService.getSessions(courseID, req.user._id.toString());
         res.status(200).send(sessions);
     } catch (error) {
         console.log(error);
@@ -72,7 +89,7 @@ const getSession = async (req, res) => {
 
 const attendSession = async (req, res) => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const sessionId = req.body.session_id;
         const nonce = req.body.nonce.toString();
         const redisNonce = await client.get(sessionId);
@@ -80,7 +97,7 @@ const attendSession = async (req, res) => {
             res.status(400).send({error: "Invalid nonce"});
         } else {
             const attend = await sessionService.addAttendance(req.user, sessionId);
-            console.log(attend);
+            await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
             res.status(200).send(attend);
         }
     } catch (error) {
