@@ -32,6 +32,13 @@ const findUser = async (email) => {
         console.log(error);
     }
 }
+const findUsers = async (email) => {
+    try {
+        return await User.find({ "email" : { $in : [...email] } },{"_id":1});
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 const updateUserRole = async (id, role) => {
     try{
@@ -40,4 +47,4 @@ const updateUserRole = async (id, role) => {
         console.log(error);
     }
 }
-module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole};
+module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole,findUsers};

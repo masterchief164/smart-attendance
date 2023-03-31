@@ -76,6 +76,25 @@ const addStudent = async (req, res) => {
         res.send(err);
     }
 }
+const addStudents = async (req, res) => {
+    try {
+        const student = req.body.student;
+        const studentObject = await userService.findUsers(student);
+        // console.log(studentObject);
+        if (studentObject === null) {
+            res.status(404).send({error: "Student not found"});
+            return;
+        }
+        const course = await courseService.addStudents(req.params.id, studentObject);
+        res.status(200).send({
+            course,
+            message: "Student added successfully",
+        })
+    } catch (err) {
+        console.log(err);
+        res.send(err);
+    }
+}
 
 const getStudentStats = async (req, res) => {
     try {
@@ -92,4 +111,4 @@ const getStudentStats = async (req, res) => {
     }
 }
 
-module.exports = {getCourses, getCourse, createCourse, updateCourse, deleteCourse, addStudent, getStudentStats};
+module.exports = {getCourses, getCourse, createCourse, updateCourse, deleteCourse, addStudent, getStudentStats,addStudents};

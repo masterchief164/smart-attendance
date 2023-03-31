@@ -53,6 +53,21 @@ const addStudent = async (course_id, student) => {
         console.log(e);
     }
 }
+const addStudents = async (course_id, students) => {
+    try {
+        const course = await getCourse(course_id);
+        const allStudents = new Set(course.students);
+        students.forEach((s)=>{
+            // console.log(s);
+            allStudents.add(s._id);
+        })
+        course.students = Array.from(allStudents);
+        // console.log(course);
+        return await course.save();
+    } catch (e) {
+        console.log(e);
+    }
+}
 
 const getStudentStats = async (course_id, student) => {
     const course = await Course.findById(course_id).populate('sessions');
@@ -74,5 +89,5 @@ const getStudentStats = async (course_id, student) => {
 }
 
 module.exports = {
-    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent, getStudentStats
+    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent, getStudentStats,addStudents
 };
