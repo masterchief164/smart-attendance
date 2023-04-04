@@ -3,3 +3,4 @@
 .env
 /private.pem
 /cert.pem
+/redis-server/redis.conf

@@ -1,0 +1,83 @@
+version: '3'
+networks:
+  app-network:
+    external: false
+services:
+  zookeeper-service:
+    container_name: zookeeper
+    image: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+  kafka-service:
+    container_name: kafka
+    image: confluentinc/cp-kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper-service
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    networks:
+      - app-network
+  redis:
+    image: redis_db
+    container_name: redis_db
+    build:
+      context: redis-server
+    ports:
+      - "1234:1234"
+    networks:
+      - app-network
+  back1:
+    image: sma-back
+    container_name: back1
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      - zookeeper-service
+      - kafka-service
+      - redis
+    ports:
+      - "8001:8000"
+  back2:
+    image: sma-back
+    container_name: back2
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      - zookeeper-service
+      - kafka-service
+      - redis
+    ports:
+       - "8002:8000"
+  back3:
+    image: sma-back
+    container_name: back3
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      - zookeeper-service
+      - kafka-service
+      - redis
+    ports:
+      - "8003:8000"
+  back4:
+    image: sma-back
+    container_name: back4
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      - zookeeper-service
+      - kafka-service
+      - redis
+    ports:
+      - "8004:8000"
+
