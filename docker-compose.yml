@@ -35,6 +35,9 @@ services:
   back1:
     image: sma-back
     container_name: back1
+    environment:
+      - REDIS_HOST=redis_db
+      - APPID=1111
     build: .
     networks:
       - app-network
@@ -47,6 +50,9 @@ services:
   back2:
     image: sma-back
     container_name: back2
+    environment:
+      - REDIS_HOST=redis_db
+      - APPID=2222
     build: .
     networks:
       - app-network
@@ -59,6 +65,9 @@ services:
   back3:
     image: sma-back
     container_name: back3
+    environment:
+      - REDIS_HOST=redis_db
+      - APPID=3333
     build: .
     networks:
       - app-network
@@ -71,6 +80,9 @@ services:
   back4:
     image: sma-back
     container_name: back4
+    environment:
+      - REDIS_HOST=redis_db
+      - APPID=4444
     build: .
     networks:
       - app-network
