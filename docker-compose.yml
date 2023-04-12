@@ -36,6 +36,7 @@ services:
     image: sma-back
     container_name: back1
     environment:
+      - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=1111
     build: .
@@ -51,6 +52,7 @@ services:
     image: sma-back
     container_name: back2
     environment:
+      - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=2222
     build: .
@@ -66,6 +68,7 @@ services:
     image: sma-back
     container_name: back3
     environment:
+      - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=3333
     build: .
@@ -81,6 +84,7 @@ services:
     image: sma-back
     container_name: back4
     environment:
+      - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=4444
     build: .
