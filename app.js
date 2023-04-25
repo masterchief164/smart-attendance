@@ -11,7 +11,6 @@ const app = http2Express(express)
 const fs = require('fs');
 
 app.use(express.static("public"))
-
 app.use(morgan('dev'))
 
 app.use(cors({
@@ -42,7 +41,6 @@ const options = {
 
 const start = async () => {
     try {
-
         const server = http2.createSecureServer(options, app)
         server.listen(port)
     } catch (e) {

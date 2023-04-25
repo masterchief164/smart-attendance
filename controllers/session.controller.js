@@ -2,6 +2,9 @@ const sessionService = require('../services/session.service')
 const crypto = require('crypto');
 const client = require('../bin/redis.util');
 const kafka = require('../bin/kafka.util');
+const rabbitMq = require('../bin/rabbitmq.util');
+const {randomUUID} = require('crypto');
+
 // TODO : change the path in frontend of the login routers
 const createSession = async (req, res) => {
     try {
@@ -54,7 +57,7 @@ const createSession = async (req, res) => {
             clearInterval(interval);
             kafkaConsumer.disconnect();
         });
-        // res.status(200).send(session);
+        res.status(200).send(session);
         console.log(session);
     } catch (error) {
         console.log(error);
@@ -117,4 +120,51 @@ const deleteSession = async (req, res) => {
     }
 }
 
-module.exports = {createSession, attendSession, getSessions, getSession, deleteSession}
+const addFace = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const message = {
+            type: "addFace",
+            File1: req.files[0].buffer,
+            File2: req.files[1].buffer,
+            File3: req.files[2].buffer,
+            userId
+        }
+        await rabbitMq.sendMessage(message, "jobs")
+        res.status(200).send({
+            message: "Processing"
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+
+const checkFace = async (req, res) => {
+    try {
+        const uuid = randomUUID();
+        console.log(uuid);
+        const userId = req.user._id;
+        const message = {
+            uuid,
+            type: "checkFace",
+            File1: req.files[0].buffer,
+            userId
+        }
+        await rabbitMq.sendMessage(message, "jobs")
+        await rabbitMq.consumeMessage(uuid, (message) => {
+            console.log(message);
+            res.status(200).send({
+                message
+            });
+        });
+
+
+    } catch (err) {
+        console.log(err)
+    }
+
+}
+
+module.exports = {createSession, attendSession, getSessions, getSession, deleteSession, addFace, checkFace}

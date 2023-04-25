@@ -25,6 +25,10 @@ const addSession = async (user, courseID) => {
 
 const addAttendance = async (user, sessionId) => {
     const session = await Session.findOne({_id: sessionId});
+    const course = await courseService.getCourse(session.courseId);
+    if (!course.students.includes(user._id)) {
+        await courseService.addStudent(course._id, user._id)
+    }
     try {
         if (session) {
             const attendees = new Set(session.attendees);
