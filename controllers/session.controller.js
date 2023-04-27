@@ -57,7 +57,6 @@ const createSession = async (req, res) => {
             clearInterval(interval);
             kafkaConsumer.disconnect();
         });
-        res.status(200).send(session);
         console.log(session);
     } catch (error) {
         console.log(error);
