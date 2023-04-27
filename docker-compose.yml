@@ -39,7 +39,7 @@ services:
       - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=1111
-      - RABBITMQ_HOST=amqp://rabbitmq:5672
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     build: .
     networks:
       - app-network
@@ -56,7 +56,7 @@ services:
       - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=2222
-      - RABBITMQ_HOST=amqp://rabbitmq:5672
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     build: .
     networks:
       - app-network
@@ -73,7 +73,7 @@ services:
       - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=3333
-      - RABBITMQ_HOST=amqp://rabbitmq:5672
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     build: .
     networks:
       - app-network
@@ -90,7 +90,7 @@ services:
       - KAFKA_HOST=kafka-service
       - REDIS_HOST=redis_db
       - APPID=4444
-      - RABBITMQ_HOST=amqp://rabbitmq:5672
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     build: .
     networks:
       - app-network
