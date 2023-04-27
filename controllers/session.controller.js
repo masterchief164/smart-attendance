@@ -4,13 +4,14 @@ const client = require('../bin/redis.util');
 const kafka = require('../bin/kafka.util');
 const rabbitMq = require('../bin/rabbitmq.util');
 const {randomUUID} = require('crypto');
+const {addTempSession} = require("../services/session.service");
 
 // TODO : change the path in frontend of the login routers
 const createSession = async (req, res) => {
     try {
         const user = req.user;
         const courseId = req.query.courseId;
-        const document = await sessionService.addSession(user, courseId); // TODO replace second user with course
+        const document = await sessionService.addSession(user, courseId);
         if (!document) {
             return res.status(404).send({error: "Course not found"});
         }
@@ -28,7 +29,6 @@ const createSession = async (req, res) => {
                 res.write(`data: ${JSON.stringify(data)}\n\n`);
             }
         })
-        session.nonce = crypto.randomInt(10000000, 99999999);
         const headers = {
             'Content-Type': 'text/event-stream',
             'Connection': 'keep-alive',
@@ -98,9 +98,11 @@ const attendSession = async (req, res) => {
         if (redisNonce !== nonce) {
             res.status(400).send({error: "Invalid nonce"});
         } else {
-            const attend = await sessionService.addAttendance(req.user, sessionId);
-            await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
-            res.status(200).send(attend);
+            // const attend = await sessionService.addAttendance(req.user, sessionId);
+            // await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
+            // res.status(200).send(attend);
+            const temp = await addTempSession(req.user, sessionId);
+            res.status(200).send(temp);
         }
     } catch (error) {
         console.log(error)
@@ -143,8 +145,15 @@ const addFace = async (req, res) => {
 const checkFace = async (req, res) => {
     try {
         const uuid = randomUUID();
-        console.log(uuid);
         const userId = req.user._id;
+        const sessionId = req.body.sessionId;
+        const tempId = req.body.tempId;
+        const tempAttendance = await sessionService.getTempSession(tempId);
+        if (!tempAttendance && tempAttendance.time.toInt() - Date.now() > 300000) {
+            return res.send(400).send({
+                message: "Temp session expired"
+            });
+        }
         const message = {
             uuid,
             type: "checkFace",
@@ -152,8 +161,14 @@ const checkFace = async (req, res) => {
             userId
         }
         await rabbitMq.sendMessage(message, "jobs")
-        await rabbitMq.consumeMessage(uuid, (message) => {
+        await rabbitMq.consumeMessage(uuid, async (message) => {
             console.log(message);
+            if (message) {
+                const attend = await sessionService.addAttendance(req.user, sessionId);
+                await sessionService.deleteTempSession(tempId);
+                await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
+                res.status(200).send(attend);
+            }
             res.status(200).send({
                 message
             });

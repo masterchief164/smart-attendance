@@ -1,5 +1,6 @@
 const Session = require('../models/session.model');
 const courseService = require('./course.service');
+const Attending = require('../models/attending.model');
 
 
 const addSession = async (user, courseID) => {
@@ -89,4 +90,47 @@ const deleteSession = async (sessionId) => {
     }
 }
 
-module.exports = {addSession, getSessions, getSession, addAttendance, deleteSession}
+const addTempSession = async (user, sessionId) => {
+    try {
+        const session = await Session.findOne({_id: sessionId});
+        const course = await courseService.getCourse(session.courseId);
+        if (!course.students.includes(user._id)) {
+            await courseService.addStudent(course._id, user._id)
+        }
+        return await Attending.create({
+            courseId: course._id,
+            instructor: course.instructor,
+            student: user._id,
+            time: new Date(),
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const getTempSession = async (id) => {
+    try {
+        return await Attending.findById(id).populate('courseId').populate('instructor');
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const deleteTempSession = async (id) => {
+    try {
+        return await Attending.findByIdAndDelete(id);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = {
+    addSession,
+    getSessions,
+    getSession,
+    addAttendance,
+    deleteSession,
+    addTempSession,
+    getTempSession,
+    deleteTempSession
+}
