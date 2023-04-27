@@ -100,7 +100,7 @@ const addTempSession = async (user, sessionId) => {
         return await Attending.create({
             courseId: course._id,
             instructor: course.instructor,
-            student: user._id,
+            attendee: user._id,
             time: new Date(),
         });
     } catch (error) {
