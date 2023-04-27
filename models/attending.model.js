@@ -6,8 +6,6 @@ const attendingSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId, ref: "Course", required: true,
     }, instructor: {
         type: Schema.Types.ObjectId, ref: "User", required: true,
-    }, date: {
-        type: Date, required: true,
     }, attendee: {
         type: Schema.Types.ObjectId, ref: 'User', required: true
     }, time: {
