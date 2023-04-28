@@ -102,6 +102,7 @@ const attendSession = async (req, res) => {
             // await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
             // res.status(200).send(attend);
             const temp = await addTempSession(req.user, sessionId);
+            console.log("temp", temp);
             res.status(200).send(temp);
         }
     } catch (error) {
@@ -149,6 +150,9 @@ const checkFace = async (req, res) => {
         const sessionId = req.body.sessionId;
         const tempId = req.body.tempId;
         const tempAttendance = await sessionService.getTempSession(tempId);
+        console.log(tempId)
+        console.log(sessionId)
+        console.log(tempAttendance)
         if (!tempAttendance && tempAttendance.time.toInt() - Date.now() > 300000) {
             return res.send(400).send({
                 message: "Temp session expired"
@@ -169,9 +173,9 @@ const checkFace = async (req, res) => {
                 await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
                 res.status(200).send(attend);
             }
-            res.status(200).send({
-                message
-            });
+            // res.status(200).send({
+            //     message
+            // });
         });
 
 

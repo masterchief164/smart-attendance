@@ -10,6 +10,8 @@ const attendingSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId, ref: 'User', required: true
     }, time: {
         type: String, required: true,
+    }, sessionId: {
+        type: Schema.Types.ObjectId, ref: "Session", required: true,
     }
 }, {timestamps: true});
 

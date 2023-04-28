@@ -99,9 +99,10 @@ const addTempSession = async (user, sessionId) => {
         }
         return await Attending.create({
             courseId: course._id,
-            instructor: course.instructor,
+            instructor: course.instructor._id,
             attendee: user._id,
-            time: new Date(),
+            time: new Date().getTime(),
+            sessionId: session._id
         });
     } catch (error) {
         console.log(error);
@@ -110,7 +111,8 @@ const addTempSession = async (user, sessionId) => {
 
 const getTempSession = async (id) => {
     try {
-        return await Attending.findById(id).populate('courseId').populate('instructor');
+        console.log(id.slice(1,-1))
+        return await Attending.findById(id.slice(1,-1))
     } catch (error) {
         console.log(error);
     }
