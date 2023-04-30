@@ -9,9 +9,12 @@ const Router = require('./routes/index.router');
 const morgan = require('morgan');
 const app = http2Express(express)
 const fs = require('fs');
-
+const path= require('path')
 app.use(express.static("public"))
-app.use(morgan('dev'))
+const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{
+    flags:'a'
+})
+app.use(morgan('combined',{stream:accessLogStream}))
 
 app.use(cors({
     credentials: true,
