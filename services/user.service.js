@@ -34,17 +34,36 @@ const findUser = async (email) => {
 }
 const findUsers = async (email) => {
     try {
-        return await User.find({ "email" : { $in : [...email] } },{"_id":1});
+        return await User.find({"email": {$in: [...email]}}, {"_id": 1});
     } catch (error) {
         console.log(error);
     }
 }
 
 const updateUserRole = async (id, role) => {
-    try{
-        return await User.findByIdAndUpdate(id, {$set:{userType:role}}, {new: true, runValidators: true}).lean();
+    try {
+        return await User.findByIdAndUpdate(id, {$set: {userType: role}}, {new: true, runValidators: true}).lean();
     } catch (error) {
         console.log(error);
     }
 }
-module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole,findUsers};
+
+const updateUser = async (user) => {
+    try {
+        return await User.findByIdAndUpdate(id, {
+            $set: {
+                name: user.name,
+                phoneNumber: user.phoneNumber,
+                department: user.department,
+                batch: user.batch,
+                roomNumber: user.roomNumber
+            }
+        }, {
+            new: true,
+            runValidators: true
+        }).lean();
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole, findUsers, updateUser};

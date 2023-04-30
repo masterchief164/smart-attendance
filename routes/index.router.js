@@ -9,6 +9,7 @@ const authRouter = require('./auth.route');
 const session = require('./session.route');
 const course = require('./course.route');
 const admin = require('./admin.route');
+const user = require('user.route')
 
 
 // swagger docs config
@@ -41,6 +42,7 @@ router.use('/auth', authRouter);
 router.use('/session', session);
 router.use('/course', course);
 router.use('/admin', admin);
+router.use('/user', user);
 
 
 module.exports = router;

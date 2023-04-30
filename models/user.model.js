@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema({
         type: String, required: true
     }, batch: {
         type: String,
+    }, roomNumber:{
+        type: String,
     }, userType: {
         type: String, required: true, enum: ['student', 'instructor', 'admin'], default: 'student'
     }, descriptions: {
