@@ -1,7 +1,7 @@
 const Session = require('../models/session.model');
 const courseService = require('./course.service');
 const Attending = require('../models/attending.model');
-
+const User = require('../models/user.model');
 
 const addSession = async (user, courseID) => {
     try {
@@ -123,7 +123,27 @@ const deleteTempSession = async (id) => {
         console.log(error);
     }
 }
-
+const getAttendees = async (attendees) => {
+    try {
+        return await User.find({ "_id" : { $in : [...attendees] } },{"_id":1});
+    } catch (error) {
+        console.log(error);
+    }
+}
+const getSessionsByCourse = async (courseId) => {
+    try {
+        return await Session.find({ "courseId" : courseId });
+    } catch (error) {
+        console.log(error);
+    }
+}
+const getSessionById=async(sessionId)=>{
+    try {
+        return await Session.findOne({ "_id" : sessionId });
+    } catch (error) {
+        console.log(error);
+    }
+}
 module.exports = {
     addSession,
     getSessions,
@@ -132,5 +152,9 @@ module.exports = {
     deleteSession,
     addTempSession,
     getTempSession,
-    deleteTempSession
+    deleteTempSession,
+    getAttendees,
+    getSessionsByCourse,
+    getSessionById
 }
+

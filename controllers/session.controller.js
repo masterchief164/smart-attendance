@@ -180,5 +180,28 @@ const checkFace = async (req, res) => {
     }
 
 }
-
-module.exports = {createSession, attendSession, getSessions, getSession, deleteSession, addFace, checkFace}
+const getAttendees=async(req,res)=>{
+    try {
+        const sessionId = req.params.sessionId;
+        const session = await sessionService.getSessionById(sessionId);
+        // console.log(session.attendees);
+        const students= await sessionService.getAttendees(session.attendees)
+        res.status(200).send(students);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+const getSessionsByCourse=async(req,res)=>{
+    try {
+        const courseId = req.params.courseId;
+        const sessions = await sessionService.getSessionsByCourse(courseId);
+        res.status(200).send(sessions);
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .send({error});
+    }
+}
+module.exports = {createSession, attendSession, getSessions, getSession, deleteSession, addFace, checkFace,getAttendees,getSessionsByCourse}
