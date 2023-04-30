@@ -9,7 +9,7 @@ const authRouter = require('./auth.route');
 const session = require('./session.route');
 const course = require('./course.route');
 const admin = require('./admin.route');
-const user = require('user.route')
+const user = require('./user.route')
 
 
 // swagger docs config
