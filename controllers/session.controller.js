@@ -98,11 +98,11 @@ const attendSession = async (req, res) => {
         if (redisNonce !== nonce) {
             res.status(400).send({error: "Invalid nonce"});
         } else {
-            // const attend = await sessionService.addAttendance(req.user, sessionId);
-            // await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
-            // res.status(200).send(attend);
-            const temp = await addTempSession(req.user, sessionId);
-            res.status(200).send(temp);
+            const attend = await sessionService.addAttendance(req.user, sessionId);
+            await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
+            res.status(200).send(attend);
+            // const temp = await addTempSession(req.user, sessionId);
+            // res.status(200).send(temp);
         }
     } catch (error) {
         console.log(error)
@@ -169,9 +169,9 @@ const checkFace = async (req, res) => {
                 await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
                 res.status(200).send(attend);
             }
-            res.status(200).send({
-                message
-            });
+            // res.status(200).send({
+            //     message
+            // });
         });
 
 
