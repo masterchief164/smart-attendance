@@ -29,7 +29,7 @@ const googleLogin = async (req, res) => {
         if (!oldUser) {
             oldUser = await addUser(user);
         }
-        const expiry = new Date(Date.now() + 1800000);
+        const expiry = new Date(Date.now() + 14400000);
         const token = await createTokenProfile(oldUser);
         const userData = decodeToken(token);
         userData.exp = expiry;
