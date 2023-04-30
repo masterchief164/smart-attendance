@@ -15,6 +15,6 @@ router.delete('/:sessionId', verify, controller.deleteSession);
 router.post('/attend', verify, controller.attendSession);
 router.post('/addFace', verify, upload.any(), controller.addFace)
 router.post('/checkFace', verify, upload.any(), controller.checkFace)
-router.get('/attendees/:sessionId',verify,controller.getAttendees)
+router.get('/attendees/:sessionId', verify, controller.getAttendees)
 router.get('/allsessions/:courseId', verify, controller.getSessionsByCourse);
 module.exports = router;

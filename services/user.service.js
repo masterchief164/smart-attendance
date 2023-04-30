@@ -48,7 +48,7 @@ const updateUserRole = async (id, role) => {
     }
 }
 
-const updateUser = async (user) => {
+const updateUser = async (id, user) => {
     try {
         return await User.findByIdAndUpdate(id, {
             $set: {

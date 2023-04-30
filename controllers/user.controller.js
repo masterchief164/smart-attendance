@@ -2,9 +2,9 @@ const userService = require("../services/user.service")
 const updateUser = async (req, res) => {
 
     const user = req.user;
-    const newUserData = req.body.user;
+    const newUserData = req.body;
 
-    const newUser = await userService.updateUser({
+    const newUser = await userService.updateUser(user._id, {
         name: newUserData.name ? newUserData.name : user.name,
         phoneNumber: newUserData.phoneNumber ? newUserData.phoneNumber : user.phoneNumber,
         department: newUserData.department ? newUserData.department : user.department,
