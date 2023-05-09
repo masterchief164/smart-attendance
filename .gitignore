@@ -4,3 +4,5 @@
 /private.pem
 /cert.pem
 /redis-server/redis.conf
+/haproxy.pem
+/proxy.cfg

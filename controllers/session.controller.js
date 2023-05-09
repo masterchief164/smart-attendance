@@ -1,7 +1,6 @@
 const sessionService = require('../services/session.service')
 const crypto = require('crypto');
 const client = require('../bin/redis.util');
-const kafka = require('../bin/kafka.util');
 const rabbitMq = require('../bin/rabbitmq.util');
 const {randomUUID} = require('crypto');
 const {addTempSession} = require("../services/session.service");
@@ -16,19 +15,16 @@ const createSession = async (req, res) => {
             return res.status(404).send({error: "Course not found"});
         }
         const session = document.toObject();
-        await kafka.createTopic(document._id.toString());
-        const kafkaConsumer = await kafka.getConsumer(document._id.toString());
-        await kafkaConsumer.run({
-            "eachMessage": async (result) => {
-                console.log("Kafka consumer", result.message.value.toString());
-                const message = JSON.parse(result.message.value.toString());
+        await rabbitMq.consumeMessage(document._id.toString(), async (message) => {
+            if (message) {
+                console.log("RabbitMQ consumer", message.toString());
                 const data = {
                     message,
                     attendance: true,
                 }
                 res.write(`data: ${JSON.stringify(data)}\n\n`);
             }
-        })
+        });
         const headers = {
             'Content-Type': 'text/event-stream',
             'Connection': 'keep-alive',
@@ -50,12 +46,10 @@ const createSession = async (req, res) => {
         req.on('close', () => {
             console.log("closed")
             clearInterval(interval);
-            kafkaConsumer.disconnect();
         });
         req.on('error', (e) => {
             console.log("error", e)
             clearInterval(interval);
-            kafkaConsumer.disconnect();
         });
         console.log(session);
     } catch (error) {
@@ -99,7 +93,7 @@ const attendSession = async (req, res) => {
             res.status(400).send({error: "Invalid nonce"});
         } else {
             const attend = await sessionService.addAttendance(req.user, sessionId);
-            await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
+            await rabbitMq.sendMessage(req.user, sessionId.toString());
             res.status(200).send(attend);
             // const temp = await addTempSession(req.user, sessionId);
             // res.status(200).send(temp);
@@ -166,7 +160,7 @@ const checkFace = async (req, res) => {
             if (message) {
                 const attend = await sessionService.addAttendance(req.user, sessionId);
                 await sessionService.deleteTempSession(tempId);
-                await kafka.sendMessage(sessionId.toString(), JSON.stringify(req.user));
+                await rabbitMq.sendMessage(req.user, sessionId.toString());
                 res.status(200).send(attend);
             }
             // res.status(200).send({
@@ -180,12 +174,12 @@ const checkFace = async (req, res) => {
     }
 
 }
-const getAttendees=async(req,res)=>{
+const getAttendees = async (req, res) => {
     try {
         const sessionId = req.params.sessionId;
         const session = await sessionService.getSessionById(sessionId);
         // console.log(session.attendees);
-        const students= await sessionService.getAttendees(session.attendees)
+        const students = await sessionService.getAttendees(session.attendees)
         res.status(200).send(students);
     } catch (error) {
         console.log(error);
@@ -193,7 +187,7 @@ const getAttendees=async(req,res)=>{
             .send({error});
     }
 }
-const getSessionsByCourse=async(req,res)=>{
+const getSessionsByCourse = async (req, res) => {
     try {
         const courseId = req.params.courseId;
         const sessions = await sessionService.getSessionsByCourse(courseId);
@@ -204,4 +198,14 @@ const getSessionsByCourse=async(req,res)=>{
             .send({error});
     }
 }
-module.exports = {createSession, attendSession, getSessions, getSession, deleteSession, addFace, checkFace,getAttendees,getSessionsByCourse}
+module.exports = {
+    createSession,
+    attendSession,
+    getSessions,
+    getSession,
+    deleteSession,
+    addFace,
+    checkFace,
+    getAttendees,
+    getSessionsByCourse
+}
