@@ -38,13 +38,19 @@ const getUserById = (id) => {
  * Find a user by email
  * @param {String} email
  * @returns {Promise}
-*/
- const findUserByEmail = (email) => {
+ */
+const findUserByEmail = (email) => {
     return User.findOne({email});
 }
 
+/**
+ * User Service
+ * Find users with given email ids
+ * @param {Array<String>} email - array of email ids
+ * @returns {Promise} - Promise of users
+ */
 const findUsers = (email) => {
-    return User.find({"email": {$in: [...email]}}, {"_id": 1});
+    return User.find({"email": {$in: [...email]}});
 }
 
 /**
@@ -53,8 +59,8 @@ const findUsers = (email) => {
  * @param {ObjectId|String} id
  * @param {String} role
  * @returns {Promise}
-*/
- const updateUserRole = (id, role) => {
+ */
+const updateUserRole = (id, role) => {
     return User.findByIdAndUpdate(id, {$set: {userType: role}}, {new: true, runValidators: true}).lean();
 }
 
@@ -71,4 +77,28 @@ const updateUser = (id, user) => {
         new: true, runValidators: true
     }).lean();
 }
-module.exports = {addUser, findUserByEmail, getAllUsers, getUserById, updateUserRole, findUsers, updateUser};
+
+/**
+ * User Service
+ * Add a course to a user
+ * @param {ObjectId|String} courseId - course id
+ * @param {ObjectId|String} studentId - student id
+ * @returns {Promise} - Promise of updated user
+ */
+const addCourseToStudent = (courseId, studentId) => {
+    return User.findByIdAndUpdate(studentId, {
+        $addToSet: {
+            courses: courseId
+        }
+    });
+}
+module.exports = {
+    addUser,
+    findUserByEmail,
+    getAllUsers,
+    getUserById,
+    updateUserRole,
+    findUsers,
+    updateUser,
+    addCourseToStudent
+};

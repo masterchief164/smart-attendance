@@ -1,76 +1,96 @@
 const Course = require('../models/course.model');
 
-const createCourse = async (course) => {
+
+/**
+ * Course Service
+ * Create a course with given course data
+ * @param {Object} course - course data
+ * @returns {Promise} - Promise of created course
+ */
+const createCourse = (course) => {
     try {
-        return await Course.create(course);
+        return Course.create(course);
     } catch (error) {
         console.log(error);
     }
 }
 
-const getCourses = async (id) => {
-    try {
-        return await Course.find({'$or': [{instructor: id}, {students: id}]}).populate('students').populate('instructor');
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * Course Service
+ * Get all courses of a user
+ * @param {ObjectId|String} id - user id
+ * @returns {Promise} - Promise of all courses
+ */
+
+const getCourses = (id) => {
+    return Course.find({'$or': [{instructor: id}, {students: id}]}).populate('students').populate('instructor');
 }
 
-const getCourse = async (id) => {
-    try {
-        return await Course.findById(id).populate('students').populate('instructor');
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ *
+ * @param {ObjectId|String} id - course id
+ * @returns {Promise} - Promise of course
+ */
+const getCourse = (id) => {
+    return Course.findById(id).populate('students').populate('instructor');
 }
 
-const updateCourse = async (id, course) => {
-    try {
-        return await Course.findByIdAndUpdate(id, course); // TODO: Validate this
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * Course Service
+ * Update course details
+ * @param {ObjectId|String} courseId - course id
+ * @param {Object} courseData - updated course data
+ * @returns {Promise} - Promise of updated course
+ */
+const updateCourse = (courseId, courseData) => {
+    return Course.findByIdAndUpdate(courseId, courseData);
 }
 
-const deleteCourse = async (id) => {
-    try {
-        return await Course.findByIdAndDelete(id);
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * Course Service
+ * Delete a course
+ * @param {ObjectId|String} courseId - course id
+ * @returns {Promise} - Promise of deleted course
+ */
+const deleteCourse = (courseId) => {
+    return Course.findByIdAndDelete(courseId);
 }
 
-const addStudent = async (course_id, student) => {
-    try {
-        const course = await getCourse(course_id);
-        const allStudents = new Set(course.students);
-        allStudents.add(student);
-        course.students = Array.from(allStudents);
-        console.log(course);
-        return await course.save();
-    } catch (e) {
-        console.log(e);
-    }
-}
-const addStudents = async (course_id, students) => {
-    try {
-        const course = await getCourse(course_id);
-        const allStudents = new Set(course.students);
-        students.forEach((s)=>{
-            // console.log(s);
-            allStudents.add(s._id);
-        })
-        course.students = Array.from(allStudents);
-        // console.log(course);
-        return await course.save();
-    } catch (e) {
-        console.log(e);
-    }
+/**
+ * Course Service
+ * Add a student to a course
+ * @param {ObjectId|String} courseId - course id
+ * @param {ObjectId|String} student - student id
+ * @returns {Promise<*>} - Promise of updated course
+ */
+const addStudentToCourse = (courseId, student) => {
+    return Course.findByIdAndUpdate(
+        courseId,
+        {$addToSet: {students: student}},
+        {new: true}
+    );
 }
 
-const getStudentStats = async (course_id, student) => {
+/**
+ * Course Service
+ * Add a students to a course
+ * @param {ObjectId|String} courseId - course id
+ * @param {Array<ObjectId|String>} students - Array of student ids
+ * @returns {Promise<*>} - Promise of updated course
+ */
+const addStudentsToCourse = (courseId, students) => {
+    return Course.findByIdAndUpdate(courseId, {$addToSet: {students: {$each: students}}}, {new: true});
+}
+
+/**
+ * Course Service
+ * Get attendance stats of a student in a course
+ * @param {ObjectId|String} course_id - course id
+ * @param {Object} student - student object
+ * @returns {Promise<{sessions: *, attendanceCount: Number, student, sessionsCount: Number}>}
+ */
+const getStudentStats = async (course_id, student) => { // TODO: needs work
     const course = await Course.findById(course_id).populate('sessions');
-    console.log(course);
     let attendanceCount = 0;
     course.sessions.forEach(session => {
         if (session.attendees.includes(student._id)) {
@@ -88,5 +108,12 @@ const getStudentStats = async (course_id, student) => {
 }
 
 module.exports = {
-    createCourse, getCourses, getCourse, updateCourse, deleteCourse, addStudent, getStudentStats,addStudents
+    createCourse,
+    getCourses,
+    getCourse,
+    updateCourse,
+    deleteCourse,
+    addStudentToCourse,
+    getStudentStats,
+    addStudentsToCourse
 };

@@ -28,7 +28,7 @@ const addAttendance = async (user, sessionId) => {
     const session = await Session.findOne({_id: sessionId});
     const course = await courseService.getCourse(session.courseId);
     if (!course.students.includes(user._id)) {
-        await courseService.addStudent(course._id, user._id)
+        await courseService.addStudentToCourse(course._id, user._id)
     }
     try {
         if (session) {
@@ -95,7 +95,7 @@ const addTempSession = async (user, sessionId) => {
         const session = await Session.findOne({_id: sessionId});
         const course = await courseService.getCourse(session.courseId);
         if (!course.students.includes(user._id)) {
-            await courseService.addStudent(course._id, user._id)
+            await courseService.addStudentToCourse(course._id, user._id)
         }
         return await Attending.create({
             courseId: course._id,
