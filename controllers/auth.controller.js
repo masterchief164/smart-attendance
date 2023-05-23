@@ -1,12 +1,19 @@
 const {createTokenProfile, decodeToken, getGoogleOAuthTokens} = require("../services/auth.service");
 const jwt = require('jsonwebtoken');
-const {addUser, findUser} = require('../services/user.service')
+const {addUser, findUserByEmail} = require('../services/user.service')
 
+/**
+ * Auth Controller
+ * Login with Google OAuth2.0
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 
 const googleLogin = async (req, res) => {
 
     try {
-        const code = req.body.tokenId;
+        const {tokenId: code} = req.body;
         const userType = req.body.userType ? req.body.userType : "student";
         const referrer = req.headers.referer? req.headers.referer: "http://localhost:3000/";
         const resp = await getGoogleOAuthTokens(code, referrer);
@@ -22,15 +29,15 @@ const googleLogin = async (req, res) => {
         const user = jwt.decode(id_token, {complete: false});
 
         user.access_token = resp.data.access_token;
-        user.roll = user.email.split('@')[0];
+        user.roll = user.email.split('@')[0]; // generalize for different orgs
         user.registeredAt = user.iat;
         user.userType = userType;
-        let oldUser = await findUser(user.email);
+        let oldUser = await findUserByEmail(user.email);
         if (!oldUser) {
             oldUser = await addUser(user);
         }
         const expiry = new Date(Date.now() + 14400000);
-        const token = await createTokenProfile(oldUser);
+        const token = createTokenProfile(oldUser);
         const userData = decodeToken(token);
         userData.exp = expiry;
 

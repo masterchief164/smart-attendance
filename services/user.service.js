@@ -1,69 +1,74 @@
 const User = require('../models/user.model');
+/*!
+ * user.service.js - user database service
+ * Copyright (c) 2023-2024, Shaswat Gupta (MIT License).
+ * https://github.com/masterchief164/smart-attendance
+ */
 
-const addUser = async (userDetails) => {
-    try {
-        const user = await User.create(userDetails);
-        console.log(user);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const getAllUsers = async () => {
-    try {
-        return await User.find();
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * User Service
+ * Add a new user
+ * @param userDetails
+ * @returns {Promise}
+ */
+const addUser = (userDetails) => {
+    return User.create(userDetails);
 }
 
-const getUserById = async (id) => {
-    try {
-        return await User.findById(id).lean();
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * User Service
+ * Get all users
+ * @returns {Promise}
+ */
+const getAllUsers = () => {
+    return User.find();
 }
 
-const findUser = async (email) => {
-    try {
-        return await User.findOne({email});
-    } catch (error) {
-        console.log(error);
-    }
-}
-const findUsers = async (email) => {
-    try {
-        return await User.find({"email": {$in: [...email]}}, {"_id": 1});
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * User Service
+ * @param  {ObjectId|String} id - user id
+ * @returns {Promise}
+ */
+const getUserById = (id) => {
+    return User.findById(id).lean();
 }
 
-const updateUserRole = async (id, role) => {
-    try {
-        return await User.findByIdAndUpdate(id, {$set: {userType: role}}, {new: true, runValidators: true}).lean();
-    } catch (error) {
-        console.log(error);
-    }
+/**
+ * User Service
+ * Find a user by email
+ * @param {String} email
+ * @returns {Promise}
+*/
+ const findUserByEmail = (email) => {
+    return User.findOne({email});
 }
 
-const updateUser = async (id, user) => {
-    try {
-        return await User.findByIdAndUpdate(id, {
-            $set: {
-                name: user.name,
-                phoneNumber: user.phoneNumber,
-                department: user.department,
-                batch: user.batch,
-                roomNumber: user.roomNumber
-            }
-        }, {
-            new: true,
-            runValidators: true
-        }).lean();
-    } catch (error) {
-        console.log(error);
-    }
+const findUsers = (email) => {
+    return User.find({"email": {$in: [...email]}}, {"_id": 1});
 }
-module.exports = {addUser, findUser, getAllUsers, getUserById, updateUserRole, findUsers, updateUser};
+
+/**
+ * User Service
+ * Update a user's role
+ * @param {ObjectId|String} id
+ * @param {String} role
+ * @returns {Promise}
+*/
+ const updateUserRole = (id, role) => {
+    return User.findByIdAndUpdate(id, {$set: {userType: role}}, {new: true, runValidators: true}).lean();
+}
+
+const updateUser = (id, user) => {
+    return User.findByIdAndUpdate(id, {
+        $set: {
+            name: user.name,
+            phoneNumber: user.phoneNumber,
+            department: user.department,
+            batch: user.batch,
+            roomNumber: user.roomNumber
+        }
+    }, {
+        new: true, runValidators: true
+    }).lean();
+}
+module.exports = {addUser, findUserByEmail, getAllUsers, getUserById, updateUserRole, findUsers, updateUser};

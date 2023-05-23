@@ -61,7 +61,7 @@ const deleteCourse = async (req, res) => {
 const addStudent = async (req, res) => {
     try {
         const student = req.body.student;
-        const studentObject = await userService.findUser(student);
+        const studentObject = await userService.findUserByEmail(student);
         if (studentObject === null) {
             res.status(404).send({error: "Student not found"});
             return;
@@ -98,7 +98,7 @@ const addStudents = async (req, res) => {
 
 const getStudentStats = async (req, res) => {
     try {
-        const student = await userService.findUser(req.params.userId);
+        const student = await userService.findUserByEmail(req.params.userId);
         if (student === null) {
             res.status(404).send({error: "Student not found"});
             return;

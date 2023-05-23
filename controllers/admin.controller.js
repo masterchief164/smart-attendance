@@ -1,17 +1,24 @@
 const jwt = require('jsonwebtoken')
 const userServices = require('../services/user.service')
 
+/**
+ * Admin Controller
+ * Login as admin
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 const adminLogin = async (req, res) => {
     try {
-        const username = req.body.username
-        const password = req.body.password
+        const username = req.body.username;
+        const password = req.body.password;
         if (!username || !password) {
-            res.status(400).send({error: "Username or password not provided"})
-            return
+            res.status(400).send({error: "Username or password not provided"});
+            return;
         }
         if (username !== process.env.ADMIN_USERNAME || password !== process.env.ADMIN_PASSWORD) {
-            res.status(401).send({error: "Invalid username or password"})
-            return
+            res.status(401).send({error: "Invalid username or password"});
+            return;
         }
         const user = {
             userType: 'admin',
@@ -30,57 +37,84 @@ const adminLogin = async (req, res) => {
         res.status(202)
             .cookie('token', token, cookie)
             .send({...user});
-    } catch (e) {
-        console.log(e)
-        res.status(500).send(e)
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
     }
 }
 
+
+/**
+ * Admin Controller
+ * Get all users
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 const getAllUsers = async (req, res) => {
     try {
-        const users = await userServices.getAllUsers()
-        res.status(200).send(users)
-    } catch (e) {
-        console.log(e)
-        res.status(500).send(e)
+        const users = await userServices.getAllUsers();
+        res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
     }
 }
 
+/**
+ * Admin Controller
+ * Get a user by id
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 const getUserById = async (req, res) => {
     try {
         const user = await userServices.getUserById(req.params.userId);
         if (!user) {
-            res.status(404).send({error: "User not found"})
-            return
+            res.status(404).send({error: "User not found"});
+            return;
         }
         res.status(200).send(user);
     } catch (e) {
-        console.log(e)
-        res.status(500).send(e)
+        console.log(e);
+        res.status(500).send(e);
     }
 }
 
+/**
+ * Admin Controller
+ * Update a user's role
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 const updateUserRole = async (req, res) => {
     try {
+        const userId = req.params.userId;
+        if(!userId) {
+            res.status(400).send({error: "User id not provided"});
+            return;
+        }
         const user = await userServices.getUserById(req.params.userId);
         if (!user) {
-            res.status(404).send({error: "User not found"})
-            return
+            res.status(404).send({error: "User not found"});
+            return;
         }
         if (!req.body.role) {
-            res.status(400).send({error: "Role not provided"})
-            return
+            res.status(400).send({error: "Role not provided"});
+            return;
         }
-        if(req.body.role !== 'student' && req.body.role !== 'instructor'){
-            res.status(400).send({error: "Invalid role"})
-            return
+        if (req.body.role !== 'student' && req.body.role !== 'instructor') {
+            res.status(400).send({error: "Invalid role"});
+            return;
         }
         user.role = req.body.role;
         const updatedUser = await userServices.updateUserRole(req.params.userId, req.body.role);
         res.status(200).send(updatedUser);
     } catch (e) {
-        console.log(e)
-        res.status(500).send(e)
+        console.log(e);
+        res.status(500).send(e);
     }
 }
 

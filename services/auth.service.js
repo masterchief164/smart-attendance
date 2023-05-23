@@ -2,7 +2,12 @@ const axios = require('axios');
 const qs = require('querystring');
 const jwt = require('jsonwebtoken');
 
-
+/**
+ * Exchange Auth code for Google OAuth access and refresh tokens
+ * @param code
+ * @param referrer
+ * @returns {Promise<AxiosResponse<any>>}
+ */
 const getGoogleOAuthTokens = async (code, referrer) => {
     const url = 'https://oauth2.googleapis.com/token';
 
@@ -14,21 +19,26 @@ const getGoogleOAuthTokens = async (code, referrer) => {
         grant_type: 'authorization_code',
     };
 
-    return axios.post(url, qs.stringify(options), {
+    return await axios.post(url, qs.stringify(options), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
     }).catch((err) => {
-        if(err.response.status === 400) {
+        if (err.response.status === 400) {
+            console.log(err.response.message);
             return {status: 400};
-        }else{
+        } else {
             console.log(err.response.data);
             return {status: 500};
         }
-
     });
 };
 
+/**
+ * Create a JSON Web Token using the profile data
+ * @param {Object} user profile data
+ * @returns {String} - JSON Web Token
+ */
 const createTokenProfile = (user) => {
     const newUser = {
         name: user.name,
@@ -48,6 +58,11 @@ const createTokenProfile = (user) => {
     return jwt.sign(newUser, process.env.CLIENT_SECRET, {expiresIn: '1800s'});
 };
 
+/**
+ * Decode a JSON Web Token
+ * @param token - JSON Web Token
+ * @returns {Object} - decoded token
+ */
 const decodeToken = (token) => jwt.decode(token, {complete: false});
 
 module.exports = {getGoogleOAuthTokens, createTokenProfile, decodeToken};

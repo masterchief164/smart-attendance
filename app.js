@@ -9,24 +9,20 @@ const Router = require('./routes/index.router');
 const morgan = require('morgan');
 const app = http2Express(express)
 const fs = require('fs');
-const path= require('path')
 
 app.use(express.static("public"))
-
-const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{
-    flags:'a'
-})
-
-app.use(morgan('combined',{stream:accessLogStream})) // todo: use winston for logging
+app.use(morgan('dev'))
 
 app.use(cors({
     credentials: true,
-    origin: ['http://localhost:3001', 'https://smartattendance.live', 'https://www.smartattendance.live']
+    origin: ['http://localhost:3001', 'https://smartattendance.live', 'https://www.smartattendance.live',
+        'https://smart-attendance-blue.vercel.app/']
 }));
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
+
 
 app.use('/', Router);
 
